@@ -24,12 +24,12 @@ uriIsSsl uri = uriScheme uri == "https:"
 uriGetHostName :: URI -> Maybe String
 uriGetHostName uri = uriRegName <$> uriAuthority uri
 
-uriGetPort :: URI -> Int -> Maybe Int
+uriGetPort :: URI -> Word16 -> Maybe Word16
 uriGetPort uri defaultPort = do
   auth <- uriAuthority uri
   return $ case uriPort auth of
                 "" -> defaultPort
-                p -> (Prelude.read $ Prelude.tail p) :: Int
+                p -> (Prelude.read $ Prelude.tail p) :: Word16
 
 uriGetFullPath :: URI -> String
 uriGetFullPath uri = uriPath uri ++ uriQuery uri ++ uriFragment uri
@@ -52,15 +52,12 @@ getLinkHeader p = getHeader p "Link"
 nextLinkFromResponse :: Response -> Maybe Link
 nextLinkFromResponse p = getLinkHeader p >>= findNextLink
 
-toWord16 :: Int -> Word16
-toWord16 = fromIntegral
-
 openUri :: URI -> (Connection -> BS.ByteString -> IO a) -> IO a
 openUri uri f =
   let
     isSsl = uriIsSsl uri
     hostName = C8.pack $ fromJust $ uriGetHostName uri
-    port = toWord16 $ fromJust $ uriGetPort uri (if isSsl then 443 else 80)
+    port = fromJust $ uriGetPort uri (if isSsl then 443 else 80)
     fullPath = C8.pack $ uriGetFullPath uri
     wrappedF c = f c fullPath
   in
