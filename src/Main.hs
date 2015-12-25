@@ -21,14 +21,15 @@ import OpenSSL
 uriIsSsl :: URI -> Bool
 uriIsSsl uri = uriScheme uri == "https:"
 
-uriGetHostName :: URI -> String
-uriGetHostName = uriRegName . fromJust . uriAuthority
+uriGetHostName :: URI -> Maybe String
+uriGetHostName uri = uriRegName <$> uriAuthority uri
 
-uriGetPort :: URI -> Int -> Int
-uriGetPort uri defaultPort =
-  case uriPort $ fromJust $ uriAuthority uri of
-       "" -> defaultPort
-       p -> (Prelude.read $ Prelude.tail p) :: Int
+uriGetPort :: URI -> Int -> Maybe Int
+uriGetPort uri defaultPort = do
+  auth <- uriAuthority uri
+  return $ case uriPort auth of
+                "" -> defaultPort
+                p -> (Prelude.read $ Prelude.tail p) :: Int
 
 uriGetFullPath :: URI -> String
 uriGetFullPath uri = uriPath uri ++ uriQuery uri ++ uriFragment uri
@@ -41,14 +42,15 @@ hasRelNext :: Link -> Bool
 hasRelNext link = containsLinkParam link Rel "next"
 
 findNextLink :: BS.ByteString -> Maybe Link
-findNextLink value = L.find hasRelNext links
-  where links = fromJust $ parseLinkHeader $ E.decodeUtf8 value
+findNextLink value = do
+  links <- parseLinkHeader $ E.decodeUtf8 value
+  L.find hasRelNext links
 
-getLinkHeader :: Response -> BS.ByteString
-getLinkHeader p = fromJust $ getHeader p "Link"
+getLinkHeader :: Response -> Maybe BS.ByteString
+getLinkHeader p = getHeader p "Link"
 
 nextLinkFromResponse :: Response -> Maybe Link
-nextLinkFromResponse = findNextLink . getLinkHeader
+nextLinkFromResponse p = getLinkHeader p >>= findNextLink
 
 toWord16 :: Int -> Word16
 toWord16 = fromIntegral
@@ -57,8 +59,8 @@ openUri :: URI -> (Connection -> BS.ByteString -> IO a) -> IO a
 openUri uri f =
   let
     isSsl = uriIsSsl uri
-    hostName = C8.pack $ uriGetHostName uri
-    port = toWord16 $ uriGetPort uri (if isSsl then 443 else 80)
+    hostName = C8.pack $ fromJust $ uriGetHostName uri
+    port = toWord16 $ fromJust $ uriGetPort uri (if isSsl then 443 else 80)
     fullPath = C8.pack $ uriGetFullPath uri
     wrappedF c = f c fullPath
   in
