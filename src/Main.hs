@@ -1,13 +1,17 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main where
 
+import Control.Monad
+import qualified Data.Aeson as A
 import Data.ByteString
+import qualified Data.ByteString.Lazy as Lazy
+import Data.Maybe
 import Data.Word (Word16)
+import GHC.Generics (Generic)
 import Network.Http.Client
 import OpenSSL
-import System.IO.Streams (stdout)
-import qualified System.IO.Streams as Streams
 
 serverUrl :: ByteString
 serverUrl = "api.github.com"
@@ -18,6 +22,12 @@ serverPort = 443
 repoUrl :: ByteString
 repoUrl = "/users/rcook/repos"
 
+data Repo = Repo {
+  name :: String
+} deriving (Show, Generic)
+
+instance A.FromJSON Repo
+
 main :: IO ()
 main = withOpenSSL $ do
   ctx <- baselineContextSSL
@@ -27,5 +37,7 @@ main = withOpenSSL $ do
       setAccept "application/json"
       setHeader "User-Agent" "rcookGitHubApiClient"
     sendRequest c request emptyBody
-    receiveResponse c $ \_ i -> Streams.connect i stdout
+    json <- receiveResponse c concatHandler
+    let repos = fromJust (A.decode $ Lazy.pack $ unpack json :: Maybe [Repo])
+    forM_ repos $ \repo -> print repo
 
