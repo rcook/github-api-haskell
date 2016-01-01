@@ -24,7 +24,10 @@ executable github-api
   build-depends:      aeson
                     , base >= 4.7 && < 5
                     , bytestring
+                    , http-link-header
                     , http-streams
                     , io-streams
+                    , network-uri
+                    , text
                     , HsOpenSSL
 
