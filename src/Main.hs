@@ -3,20 +3,20 @@
 
 module Main where
 
-import Control.Monad
-import Data.Aeson
+import           Control.Monad
+import           Data.Aeson
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as C8
 import qualified Data.List as L
-import Data.Maybe
-import Data.Text
+import           Data.Maybe
+import           Data.Text
 import qualified Data.Text.Encoding as E
-import Data.Word (Word16)
-import GHC.Generics (Generic)
-import Network.Http.Client
-import Network.HTTP.Link
-import Network.URI
-import OpenSSL
+import           Data.Word (Word16)
+import           GHC.Generics (Generic)
+import           Network.Http.Client
+import           Network.HTTP.Link
+import           Network.URI
+import           OpenSSL
 
 -- | Returns True if URI requires SSL or False otherwise
 --
