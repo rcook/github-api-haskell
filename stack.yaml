@@ -6,9 +6,6 @@ resolver: lts-3.20
 # Local packages, usually specified by relative directory name
 packages:
 - '.'
-- location:
-    git: https://github.com/rcook/doctest-discover.git
-    commit: 1765720cd42cb875b689b44ba08c477d89e87439
 
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
 extra-deps: [http-link-header-1.0.1]
