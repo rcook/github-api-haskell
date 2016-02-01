@@ -1,9 +1,4 @@
-# github-api-haskell
-
-| Platform | Build status |
-| -------- | ------------ |
-| Linux | [![Linux build Status](https://travis-ci.org/rcook/github-api-haskell.svg)](https://travis-ci.org/rcook/github-api-haskell) |
-| Windows | [![Windows build status](https://ci.appveyor.com/api/projects/status/nj5k2iv6v7iuy4hs?svg=true)](https://ci.appveyor.com/project/rcook/github-api-haskell) |
+# github-api-haskell [![Travis build](https://img.shields.io/travis/rcook/github-api-haskell.svg?label=Linux%20build)](https://travis-ci.org/rcook/github-api-haskell) [![AppVeyor build](https://img.shields.io/appveyor/ci/rcook/github-api-haskell.svg?label=Windows%20build)](https://ci.appveyor.com/project/rcook/github-api-haskell)
 
 Simple GitHub API client in Haskell
 
